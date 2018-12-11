@@ -1,0 +1,41 @@
+---
+title: 'Reproducible Research: Peer-graded Assignment Project 1'
+author: "Antonio Candia"
+date: "December 10, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading and preprocessing the data
+
+After cloning the [GitHub repository](http://github.com/rdpeng/RepData_PeerAssessment1) for this assignment. 
+
+Reader should load the necesary libraries  
+
+```{r load, echo=TRUE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+```
+Set the working directory and unzipp the activity.zip file.
+Then read the csv file and change date format.
+
+```{r read, echo=TRUE, warning=FALSE}
+setwd("~/RepData_PeerAssessment1")
+unzip("activity.zip")
+data<-read.csv("activity.csv")
+
+```
+## What is mean total number of steps taken per day?
+1. Calculate the total number of steps taken per day
+```{r calculate, echo=TRUE, warning=FALSE}
+data %>% 
+  tbl_df() %>% 
+  mutate(date = as.Date(date)) %>% 
+  group_by(day = floor_date(date, "day")) %>%
+  summarise(total_steps = sum(steps))
+```
+
