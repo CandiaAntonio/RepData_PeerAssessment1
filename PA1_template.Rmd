@@ -23,7 +23,7 @@ Set the working directory and unzipp the activity.zip file.
 Then read the csv file and change date format.  
 
 ```{r read, echo=TRUE, warning=FALSE}
-setwd("~/RepData_PeerAssessment1")
+setwd(setwd("~/R/RepData_PeerAssessment1"))
 unzip("activity.zip")
 data<-read.csv("activity.csv")
 
@@ -40,6 +40,48 @@ data %>%
   summarise(total_steps = sum(steps)) %>% 
   ggplot(aes(x=total_steps)) + geom_histogram(color="black", fill="blue", binwidth = 5000)
 ```
+
+Calculate and report the **mean** and **median** total number of steps taken per day  
+
+```{r avg, echo=TRUE, warning=FALSE}
+data %>% 
+  tbl_df() %>% 
+  mutate(date = as.Date(date)) %>% 
+  group_by(day = floor_date(date, "day")) %>%
+  summarise(total_steps = sum(steps)) %>% 
+  summary() 
+  
+``` 
+Mean   :10766
+
+Median :10765
+
+## What is the average daily activity pattern?
+
+1. Make a time series plot (i.e. `type = "l"`) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+A Tidyverse approach to process the data:  
+
+```{r}
+  data_ts_plot <- data %>% 
+  tbl_df() %>% 
+  mutate(date = as.Date(date)) %>% 
+  spread(interval,steps) %>% 
+  summarise_if(is.numeric, mean, na.rm = TRUE) %>% 
+  gather(interval, steps) %>% 
+  mutate(interval = as.integer(interval))
+
+```
+
+Then we use ggplot to graph:
+
+```{r}
+data_ts_plot %>% 
+  ggplot(aes(x = interval, y = steps)) + geom_line(color="blue") + theme(plot.title = element_text(size = 16, 
+    face = "bold", hjust = 0.5)) +labs(title = "Average daily activity pattern")
+```
+
+
 
 ## Imputing missing values
 
